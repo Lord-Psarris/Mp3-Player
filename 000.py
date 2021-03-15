@@ -174,7 +174,6 @@ class Mp3Player:
             a = mixer.Sound(play_song)
             total_length = a.get_length()
 
-        # div - total_length/60, mod - total_length % 60
         mins, secs = divmod(total_length, 60)
         mins = round(mins)
         secs = round(secs)
