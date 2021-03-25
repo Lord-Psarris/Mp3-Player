@@ -7,6 +7,7 @@ import time
 import glob
 from mutagen.mp3 import MP3
 from pygame import mixer
+from tkinter import filedialog
 
 mixer.init()
 
@@ -28,10 +29,20 @@ class Mp3Player:
 
     def __init__(self):
         self.master = Mp3Player.root
+        self.master.option_add('*tearOff', False)
 
         self.playlist = []
         self.current = ''
         self.paused = False
+        self.location = "C:\\Users\\"
+
+        menu = Menu(self.master)
+        self.master.config(menu=menu)
+
+        file = Menu(menu)
+        menu.add_cascade(menu=file, label='File')
+        file.add_command(label='Set location', command=self.set_location, accelerator="Ctrl N")
+        file.add_command(label='Exit', command=exit, accelerator="Ctrl Shift N")
 
         frame_ = Frame(self.master)
 
@@ -81,16 +92,20 @@ class Mp3Player:
 
         frames_.pack(fill=X)
 
-        t1 = threading.Thread(target=self.get_songs)
-        t1.start()
-
         self.master.mainloop()
 
     def get_songs(self):
-        for file_path in glob.glob('C:\\Users\\Dr Steve\\Music\\**\\*.mp3', recursive=True):
+        for file_path in glob.glob(self.location + '**\\*.mp3', recursive=True):
             self.playlist.append(file_path)
             file_name = format_songs(file_path)
             self.list_main.insert(END, file_name)
+
+    def set_location(self):
+        filename_path = filedialog.askdirectory()
+        p = filename_path + '/'
+        self.location = p.replace("/", "\\")
+        self.list_main.delete(0, END)
+        threading.Thread(target=self.get_songs).start()
 
     def play(self):
         try:
